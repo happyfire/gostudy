@@ -102,6 +102,12 @@ func main() {
 	testForRange()
 
 	testMap()
+
+	testFuncValues()
+
+	testFuncClosures()
+
+	testFibonacciClosure()
 }
 
 func needInt(x int) int { return x*10 + 1 }
