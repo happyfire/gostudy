@@ -108,6 +108,8 @@ func main() {
 	testFuncClosures()
 
 	testFibonacciClosure()
+
+	testMethod()
 }
 
 func needInt(x int) int { return x*10 + 1 }
@@ -278,6 +280,9 @@ func testSlice() {
 	if z == nil {
 		fmt.Println("z is nil")
 	}
+	fmt.Printf("%p\n", &z)
+	z = append(z, 111)
+	fmt.Println(z)
 
 	//append slice
 	var e []int
