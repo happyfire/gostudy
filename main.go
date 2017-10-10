@@ -110,6 +110,13 @@ func main() {
 	testFibonacciClosure()
 
 	testMethod()
+
+	testInterface()
+	testInterface2()
+	testInterface3()
+	testInterfaceStringer()
+	testInterfaceError()
+	testInterfaceReader()
 }
 
 func needInt(x int) int { return x*10 + 1 }
