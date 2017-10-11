@@ -117,6 +117,13 @@ func main() {
 	testInterfaceStringer()
 	testInterfaceError()
 	testInterfaceReader()
+
+	testRoutine()
+	testChannel()
+
+	testMutex()
+
+	testWebCrawler()
 }
 
 func needInt(x int) int { return x*10 + 1 }
