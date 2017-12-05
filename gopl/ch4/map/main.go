@@ -45,7 +45,7 @@ func main() {
 	//map类型的零值是nil
 	{
 		var m map[string]int
-		fmt.Println(m == nil, len(m) == 0) // true, true
+		fmt.Println(m["a"], m == nil, len(m) == 0) //0, true, true
 		//m["a"] = 10 //panic: assignment to entry in nil map
 	}
 
