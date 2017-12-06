@@ -18,6 +18,11 @@ func (p Point) Distance(q Point) float64 {
 	return math.Hypot(q.X-p.X, q.Y-p.Y)
 }
 
+func (p *Point) ScaleBy(scale float64) {
+	p.X *= scale
+	p.Y *= scale
+}
+
 type Path []Point
 
 func (path Path) Distance() float64 {
