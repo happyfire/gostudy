@@ -45,7 +45,7 @@ func main2() {
 
 }
 
-func main() {
+func main1() {
 	var c redisClient.RedisClient
 	err := c.ConnectTo("127.0.0.1:6379", "dream2010")
 	if err != nil {
@@ -67,19 +67,39 @@ func main() {
 
 	for {
 		var value string
+		var err error
 		if c.IsAvaliable {
-			value = c.GetString("foo")
-			if len(value) == 0 {
-				value = c2.GetString("foo")
+			value, err = c.GetString("foo")
+			if err != nil {
+				value, err = c2.GetString("foo")
 			}
 		} else if c2.IsAvaliable {
-			value = c2.GetString("foo")
+			value, err = c2.GetString("foo")
 		}
 
-		if len(value) == 0 {
-			panic("all radis down!")
+		if err != nil {
+			panic("all redis down!")
 		} else {
 			fmt.Println("get value for foo:", value)
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+}
+
+func main() {
+	var rm redisClient.RedisManager
+	rm.SetRedisServer("127.0.0.1:6379", "dream2010", true)
+	rm.SetRedisServer("192.168.1.19:6379", "", false)
+
+	defer rm.Close()
+
+	for {
+		value, err := rm.GetString("foo")
+		if err != nil {
+			panic("all redis down!")
+		} else {
+			fmt.Println("get value:", value)
 		}
 
 		time.Sleep(1 * time.Second)

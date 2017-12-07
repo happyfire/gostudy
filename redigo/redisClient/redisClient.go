@@ -20,7 +20,7 @@ const (
 	ConnectionTimeout = 1 * time.Second
 	ReadTimeout       = 1 * time.Second
 	WriteTimeout      = 1 * time.Second
-	PingWaitTime      = 1 * time.Second
+	PingWaitTime      = 10 * time.Second
 	KeepAliveTime     = 60 * time.Second
 )
 
@@ -87,7 +87,7 @@ func (c *RedisClient) Close() {
 	c.Mux.Unlock()
 }
 
-func (c *RedisClient) GetString(key string) string {
+func (c *RedisClient) GetString(key string) (string, error) {
 	if c.IsAvaliable {
 		c.Mux.Lock()
 		result, err := c.Connection.Do("GET", key)
@@ -96,16 +96,11 @@ func (c *RedisClient) GetString(key string) string {
 			if err == io.EOF {
 				c.Close()
 			}
-			return ""
+			return "", err
 		} else {
-			str, err := redis.String(result, err)
-			if err != nil {
-				return ""
-			} else {
-				return str
-			}
+			return redis.String(result, err)
 		}
 	} else {
-		return ""
+		return "", fmt.Errorf("redis not avaliable:%s", c.redisAddress)
 	}
 }
