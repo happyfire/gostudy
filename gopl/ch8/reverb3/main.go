@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -32,16 +33,24 @@ func echo(c net.Conn, shout string, delay time.Duration) {
 	fmt.Fprintln(c, "\t", strings.ToLower(shout))
 }
 
+//这个版本使用sync.WaitGroup等待所有echo goroutine执行完成后再close connection
+//这样客户端就能收到所有的回文（当然客户端必须是closeWrite而不是Close，netcat3就是这样）
+
 func handleConn(c net.Conn) {
+	var wg sync.WaitGroup // number of echo goroutines
+
 	input := bufio.NewScanner(c)
 	for input.Scan() {
-		go echo(c, input.Text(), 1*time.Second)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			echo(c, input.Text(), 1*time.Second)
+		}()
 	}
 	// Note: ignoring potential errors from input.Err()
-	time.Sleep(3 * time.Second) //注意：这儿等待3秒是为了等待所有的echo完成的简单处理,应该有更科学的处理方法
+
+	//这儿因为Wait之后没有可能引发死锁的channel操作，所以可以直接放在主goroutine里面wait，否则要另起一个goroutine
+	wg.Wait()
 	c.Close()
 
-	//注：这个例子实际是书上的reverb2，我已经在echo调用前加了go，因此netcat3只是closeWrite这儿也会因为echo是goruntine而立刻执行close，
-	// 导致netcat3不能收到所有的回应，所以这儿临时改了下增加了一个sleep。书上说reverb2处理比较困难确实如此。如果是reverb1，因为echo不是gorunine
-	// 会顺序发送完毕然后close
 }
