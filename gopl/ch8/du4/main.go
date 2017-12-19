@@ -14,6 +14,9 @@ import (
 //    首先，新生成的walkDir goroutine开始的时候检查done，如果已经退出则goroutine直接返回
 //	  在dirents中检查到done也直接返回,这样避免从阻塞恢复的dirents产生新的goroutine
 //    最后，在主goroutine中，检查到done需要排空fileSizes，避免walkDir goroutine阻塞在向fileSizes写入，让这些goroutine都执行完毕
+//
+// 同时，这个例子也包含了前面两个例子中的机制，即使用WaitGroup等待所有goroutine执行完毕关闭fileSizes，
+// 以及使用带缓冲的channel作为信号量来控制并发执行的dirents的数量
 
 var done = make(chan struct{})
 
