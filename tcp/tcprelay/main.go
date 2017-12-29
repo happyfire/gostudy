@@ -30,7 +30,10 @@ func relay(serverconn net.Conn) {
 		log.Printf("relay: done copying serverconn to clientconn\n")
 		if tcpconn, ok := clientconn.(*net.TCPConn); ok {
 			tcpconn.CloseWrite()
+		} else {
+			clientconn.Close()
 		}
+
 		done <- struct{}{}
 	}()
 
@@ -38,6 +41,8 @@ func relay(serverconn net.Conn) {
 	log.Printf("relay: done copying clientconn to serverconn\n")
 	if tcpconn, ok := serverconn.(*net.TCPConn); ok {
 		tcpconn.CloseWrite()
+	} else {
+		serverconn.Close()
 	}
 	<-done
 }
